@@ -122,12 +122,23 @@ class MovieApp {
   // Update search icon based on input content
   updateSearchIcon() {
     const query = this.searchInput.value.trim();
-    if (query) {
-      // Change to typing icon when user is typing
-      this.searchIcon.className = 'fas fa-keyboard search-icon';
-    } else {
+    
+    if (!query) {
       // Default search icon when empty
       this.searchIcon.className = 'fas fa-search search-icon';
+      return;
+    }
+    
+    // Check if input looks like a URL or web address
+    const urlPattern = /^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{2,})/i;
+    const isUrl = urlPattern.test(query);
+    
+    if (isUrl) {
+      // Link icon for URLs/addresses
+      this.searchIcon.className = 'fas fa-link search-icon';
+    } else {
+      // Keyboard icon for regular text input
+      this.searchIcon.className = 'fas fa-keyboard search-icon';
     }
   }
 

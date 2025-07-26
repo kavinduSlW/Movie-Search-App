@@ -42,8 +42,15 @@ class MovieApp {
       if (e.key === 'Enter') this.handleSearch();
     });
     
-    // Update search icon based on input
-    this.searchInput.addEventListener('input', () => this.updateSearchIcon());
+    // Update search icon based on input - with immediate feedback
+    this.searchInput.addEventListener('input', () => {
+      this.updateSearchIcon();
+    });
+    
+    // Also update on paste events
+    this.searchInput.addEventListener('paste', () => {
+      setTimeout(() => this.updateSearchIcon(), 10);
+    });
     
     // Load more movies
     this.loadMoreBtn.addEventListener('click', () => this.loadMoreMovies());
@@ -129,15 +136,35 @@ class MovieApp {
       return;
     }
     
-    // Check if input looks like a URL or web address
-    const urlPattern = /^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.[a-zA-Z]{2,})/i;
-    const isUrl = urlPattern.test(query);
+    // Enhanced URL/address detection patterns
+    const httpPattern = /^https?:\/\//i;
+    const wwwPattern = /^www\./i;
+    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.([a-zA-Z]{2,})/;
+    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}/;
+    const localhostPattern = /^localhost/i;
+    const emailPattern = /@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
     
-    if (isUrl) {
-      // Link icon for URLs/addresses
+    // Check different types of addresses/URLs
+    if (httpPattern.test(query)) {
+      // Full HTTP/HTTPS URLs
       this.searchIcon.className = 'fas fa-link search-icon';
+    } else if (wwwPattern.test(query)) {
+      // www.example.com format
+      this.searchIcon.className = 'fas fa-globe search-icon';
+    } else if (domainPattern.test(query)) {
+      // Domain names like example.com, subdomain.example.org
+      this.searchIcon.className = 'fas fa-globe search-icon';
+    } else if (ipPattern.test(query)) {
+      // IP addresses
+      this.searchIcon.className = 'fas fa-server search-icon';
+    } else if (localhostPattern.test(query)) {
+      // localhost addresses
+      this.searchIcon.className = 'fas fa-home search-icon';
+    } else if (emailPattern.test(query)) {
+      // Email addresses
+      this.searchIcon.className = 'fas fa-envelope search-icon';
     } else {
-      // Keyboard icon for regular text input
+      // Regular text input
       this.searchIcon.className = 'fas fa-keyboard search-icon';
     }
   }
